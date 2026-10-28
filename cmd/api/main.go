@@ -12,7 +12,10 @@ import (
 
 	"mentor-api/internal/infrastructure/config"
 	"mentor-api/internal/infrastructure/database"
-	"mentor-api/internal/infrastructure/repository/postgres"
+	pgExam "mentor-api/internal/infrastructure/repository/postgres/exam"
+	pgHistory "mentor-api/internal/infrastructure/repository/postgres/history"
+	pgQuestion "mentor-api/internal/infrastructure/repository/postgres/question"
+	pgUser "mentor-api/internal/infrastructure/repository/postgres/user"
 	"mentor-api/internal/infrastructure/security"
 	httpInterface "mentor-api/internal/interface/http"
 	"mentor-api/internal/interface/http/handler"
@@ -46,10 +49,10 @@ func main() {
 	tokenManager := security.NewJWTManager(cfg.JWTSecret)
 
 	// 3. Initialize Repositories
-	userRepo := postgres.NewUserRepository(db)
-	questionRepo := postgres.NewQuestionRepository(db)
-	examRepo := postgres.NewExamRepository(db, questionRepo)
-	historyRepo := postgres.NewHistoryRepository(db)
+	userRepo := pgUser.NewUserRepository(db)
+	questionRepo := pgQuestion.NewQuestionRepository(db)
+	examRepo := pgExam.NewExamRepository(db, questionRepo)
+	historyRepo := pgHistory.NewHistoryRepository(db)
 
 	// 4. Initialize Use Cases & Internal Services
 	questionService := question.NewQuestionService(questionRepo)
@@ -115,4 +118,3 @@ func main() {
 
 	log.Println("Server gracefully stopped.")
 }
-

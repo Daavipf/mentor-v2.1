@@ -7,7 +7,7 @@ import (
 
 	"mentor-api/internal/infrastructure/config"
 	"mentor-api/internal/infrastructure/database"
-	"mentor-api/internal/infrastructure/repository/postgres"
+	pgQuestion "mentor-api/internal/infrastructure/repository/postgres/question"
 	"mentor-api/internal/usecase/question"
 )
 
@@ -21,7 +21,7 @@ func main() {
 	}
 	defer db.Close()
 
-	questionRepo := postgres.NewQuestionRepository(db)
+	questionRepo := pgQuestion.NewQuestionRepository(db)
 	questionService := question.NewQuestionService(questionRepo)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -33,4 +33,3 @@ func main() {
 
 	log.Println("Questions and alternatives seeded successfully inside the system.")
 }
-

@@ -29,6 +29,10 @@ mentor-v2.1/
 │   │   ├── config/              # Variáveis de ambiente e configuração
 │   │   ├── database/            # Conexão PostgreSQL (pgx) e executor de migrações embutidas
 │   │   ├── repository/postgres/ # Implementações concretas dos repositórios em PostgreSQL
+│   │   │   ├── exam/            # exam_repository.go, create.go, get_by_id.go, update.go, etc.
+│   │   │   ├── user/            # user_repository.go, create.go, get_by_id.go, get_by_email.go, update.go
+│   │   │   ├── question/        # question_repository.go, helpers.go, create.go, list_by_areas.go, etc.
+│   │   │   └── history/         # history_repository.go, create.go, get_by_id.go, list_by_user_id.go, etc.
 │   │   └── security/            # Hashing seguro com Bcrypt e emissão/validação de tokens JWT
 │   └── interface/http/          # Interface Adapters (HTTP)
 │       ├── handler/             # Controllers HTTP (AuthHandler, ExamHandler, HistoryHandler)
