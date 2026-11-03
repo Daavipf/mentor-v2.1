@@ -12,6 +12,7 @@ import (
 
 	"mentor-api/internal/infrastructure/config"
 	"mentor-api/internal/infrastructure/database"
+	pgAnalytics "mentor-api/internal/infrastructure/repository/postgres/analytics"
 	pgExam "mentor-api/internal/infrastructure/repository/postgres/exam"
 	pgHistory "mentor-api/internal/infrastructure/repository/postgres/history"
 	pgQuestion "mentor-api/internal/infrastructure/repository/postgres/question"
@@ -19,6 +20,7 @@ import (
 	"mentor-api/internal/infrastructure/security"
 	httpInterface "mentor-api/internal/interface/http"
 	"mentor-api/internal/interface/http/handler"
+	"mentor-api/internal/usecase/analytics"
 	"mentor-api/internal/usecase/auth"
 	"mentor-api/internal/usecase/exam"
 	"mentor-api/internal/usecase/history"
@@ -53,12 +55,14 @@ func main() {
 	questionRepo := pgQuestion.NewQuestionRepository(db)
 	examRepo := pgExam.NewExamRepository(db, questionRepo)
 	historyRepo := pgHistory.NewHistoryRepository(db)
+	analyticsRepo := pgAnalytics.NewAnalyticsRepository(db)
 
 	// 4. Initialize Use Cases & Internal Services
 	questionService := question.NewQuestionService(questionRepo)
 	authUseCase := auth.NewAuthUseCase(userRepo, hasher, tokenManager, cfg.JWTExpiresIn)
 	examUseCase := exam.NewExamUseCase(examRepo, historyRepo, questionService)
 	historyUseCase := history.NewHistoryUseCase(historyRepo, examRepo)
+	analyticsUseCase := analytics.NewAnalyticsUseCase(analyticsRepo)
 
 	// 5. Seed default questions internally if database is available
 	if db != nil {
@@ -79,12 +83,14 @@ func main() {
 	authHandler := handler.NewAuthHandler(authUseCase)
 	examHandler := handler.NewExamHandler(examUseCase)
 	historyHandler := handler.NewHistoryHandler(historyUseCase)
+	analyticsHandler := handler.NewAnalyticsHandler(analyticsUseCase)
 
 	router := httpInterface.NewRouter(httpInterface.RouterConfig{
-		AuthHandler:    authHandler,
-		ExamHandler:    examHandler,
-		HistoryHandler: historyHandler,
-		TokenManager:   tokenManager,
+		AuthHandler:      authHandler,
+		ExamHandler:      examHandler,
+		HistoryHandler:   historyHandler,
+		AnalyticsHandler: analyticsHandler,
+		TokenManager:     tokenManager,
 	})
 
 	server := &http.Server{

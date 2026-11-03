@@ -13,10 +13,11 @@ import (
 )
 
 type RouterConfig struct {
-	AuthHandler    *handler.AuthHandler
-	ExamHandler    *handler.ExamHandler
-	HistoryHandler *handler.HistoryHandler
-	TokenManager   security.TokenManager
+	AuthHandler      *handler.AuthHandler
+	ExamHandler      *handler.ExamHandler
+	HistoryHandler   *handler.HistoryHandler
+	AnalyticsHandler *handler.AnalyticsHandler
+	TokenManager     security.TokenManager
 }
 
 func NewRouter(cfg RouterConfig) http.Handler {
@@ -75,6 +76,15 @@ func NewRouter(cfg RouterConfig) http.Handler {
 			r.Route("/histories", func(r chi.Router) {
 				r.Get("/", cfg.HistoryHandler.List)
 				r.Get("/{id}", cfg.HistoryHandler.GetByID)
+			})
+
+			// Analytics & Performance Metrics (each user restricted to their own)
+			r.Route("/analytics", func(r chi.Router) {
+				r.Get("/overview", cfg.AnalyticsHandler.Overview)
+				r.Get("/by-discipline", cfg.AnalyticsHandler.ByDiscipline)
+				r.Get("/topics-ranking", cfg.AnalyticsHandler.TopicsRanking)
+				r.Get("/evolution", cfg.AnalyticsHandler.Evolution)
+				r.Get("/exams-history", cfg.AnalyticsHandler.ExamsHistory)
 			})
 		})
 	})

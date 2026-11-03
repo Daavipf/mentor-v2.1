@@ -24,7 +24,8 @@ mentor-v2.1/
 │   │   ├── auth/                # Registro, login e perfil do usuário
 │   │   ├── exam/                # Criação, listagem, resolução e finalização de simulados
 │   │   ├── history/             # Histórico de notas e tentativas
-│   │   └── question/            # Serviço interno de questões/alternativas (SEM exposição HTTP)
+│   │   ├── question/            # Serviço interno de questões/alternativas (SEM exposição HTTP)
+│   │   └── analytics/           # Análise de performance, métricas, rankings e evolução
 │   ├── infrastructure/          # Frameworks, Drivers & Adapters
 │   │   ├── config/              # Variáveis de ambiente e configuração
 │   │   ├── database/            # Conexão PostgreSQL (pgx) e executor de migrações embutidas
@@ -32,10 +33,11 @@ mentor-v2.1/
 │   │   │   ├── exam/            # exam_repository.go, create.go, get_by_id.go, update.go, etc.
 │   │   │   ├── user/            # user_repository.go, create.go, get_by_id.go, get_by_email.go, update.go
 │   │   │   ├── question/        # question_repository.go, helpers.go, create.go, list_by_areas.go, etc.
-│   │   │   └── history/         # history_repository.go, create.go, get_by_id.go, list_by_user_id.go, etc.
+│   │   │   ├── history/         # history_repository.go, create.go, get_by_id.go, list_by_user_id.go, etc.
+│   │   │   └── analytics/       # analytics_repository.go, get_overview.go, get_by_discipline.go, etc.
 │   │   └── security/            # Hashing seguro com Bcrypt e emissão/validação de tokens JWT
 │   └── interface/http/          # Interface Adapters (HTTP)
-│       ├── handler/             # Controllers HTTP (AuthHandler, ExamHandler, HistoryHandler)
+│       ├── handler/             # Controllers HTTP (Auth, Exam, History, Analytics)
 │       ├── middleware/          # Autenticação JWT, Logging estruturado, Recuperação e CORS
 │       ├── response/            # Padronização de respostas JSON e mapeador de erros
 │       └── router.go            # Configuração das rotas Chi v5
@@ -229,4 +231,47 @@ Lista o histórico de simulados finalizados e notas do usuário autenticado.
 
 #### `GET /api/v1/histories/{id}`
 Detalha um registro de histórico do usuário.
+
+---
+
+### Análise de Performance & Métricas (Protegido - Header `Authorization: Bearer <TOKEN>`)
+
+Todos os endpoints analíticos executam agregações otimizadas diretamente no banco PostgreSQL (`COUNT`, `SUM`, `AVG`, `FILTER (WHERE got_right = true)`), tratam divisões por zero com `NULLIF`, e isolam os dados exclusivamente para o usuário autenticado.
+
+#### `GET /api/v1/analytics/overview`
+Retorna a visão geral e resumo executivo:
+- **Total de Questões Respondidas**
+- **Taxa Geral de Acerto (%)**
+- **Total de Simulados Concluídos**
+- **Média Geral de Nota em Simulados**
+- **Desempenho por Área de Conhecimento** (área, respondidas, acertos, %)
+- **Ritmo de Estudo Recente** (questões respondidas por dia nos últimos 30 dias)
+
+#### `GET /api/v1/analytics/by-discipline`
+Retorna o desempenho detalhado por disciplina com volume e % de acerto.
+- Query params opcionais:
+  - `start_date` (ex: `2026-01-01` ou ISO 8601)
+  - `end_date` (ex: `2026-12-31`)
+  - `area` (ex: `Ciências da Natureza`)
+
+#### `GET /api/v1/analytics/topics-ranking`
+Identifica os pontos fortes e pontos fracos do usuário:
+- **Top 5 Tópicos de Maior Domínio:** maior taxa de acerto com mínimo de 10 questões (configurável via `min_questions`).
+- **Top 5 Tópicos Críticos/Pontos Fracos:** tópicos com menor taxa de acerto.
+- Query params opcionais:
+  - `min_questions` (padrão: `10`)
+
+#### `GET /api/v1/analytics/evolution`
+Retorna a série temporal da evolução do aluno nos últimos meses:
+- Query params opcionais:
+  - `period`: `weekly` (semanal, ex: `2026-W42`) ou `monthly` (mensal, ex: `2026-10`) - padrão: `weekly`.
+  - `months`: número de meses de histórico (padrão: `6`).
+- Retorna os pontos temporais e o ritmo diário nos últimos 30 dias (adequado para heatmaps e gráficos de barras).
+
+#### `GET /api/v1/analytics/exams-history`
+Retorna a lista cronológica de todos os simulados finalizados:
+- Título, data, nota (`score`), total de questões e acertos.
+- `overall_average_score`: Média de nota histórica de todos os simulados.
+- `recent_average_score`: Média de nota dos simulados mais recentes.
+- `score_evolution_percentage`: Evolução percentual calculada entre os simulados anteriores e recentes.
 
