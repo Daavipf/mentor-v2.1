@@ -39,8 +39,8 @@ func main() {
 		defer db.Close()
 		log.Println("Successfully connected to PostgreSQL.")
 
-		// Run database migrations
-		if err := database.RunMigrations(db, database.DefaultMigrationSQL); err != nil {
+		// Run database migrations with version control
+		if err := database.RunMigrations(db); err != nil {
 			log.Fatalf("Database migration failed: %v", err)
 		}
 		log.Println("Database migrations applied successfully.")

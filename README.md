@@ -13,11 +13,13 @@ mentor-v2.1/
 ├── cmd/
 │   ├── api/
 │   │   └── main.go              # Ponto de entrada, injeção de dependências e graceful shutdown
-│   └── seeder/
-│       └── main.go              # CLI interno para povoamento de questões e alternativas
+│   ├── seeder/
+│   │   └── main.go              # CLI interno para povoamento de questões e alternativas
+│   └── migrate/
+│       └── main.go              # CLI de migrações e controle de versão do banco
 ├── internal/
 │   ├── domain/                  # Enterprise Business Rules (independente de frameworks externos)
-│   │   ├── entity/              # Entidades: User, Question, Alternative, Exam, History, etc.
+│   │   ├── entity/              # Entidades: User, Question, Alternative, Exam, History, Analytics, etc.
 │   │   ├── repository/          # Interfaces (Ports) dos repositórios
 │   │   └── errors.go            # Erros de domínio (ErrNotFound, ErrForbidden, etc.)
 │   ├── usecase/                 # Application Business Rules (casos de uso)
@@ -28,7 +30,10 @@ mentor-v2.1/
 │   │   └── analytics/           # Análise de performance, métricas, rankings e evolução
 │   ├── infrastructure/          # Frameworks, Drivers & Adapters
 │   │   ├── config/              # Variáveis de ambiente e configuração
-│   │   ├── database/            # Conexão PostgreSQL (pgx) e executor de migrações embutidas
+│   │   ├── database/            # Conexão PostgreSQL (pgx), migrator e embed de migrações
+│   │   │   ├── migrations/      # Migrações versionadas embutidas (000001_..., 000002_...)
+│   │   │   ├── migrator.go      # Sistema de controle de versão (schema_migrations)
+│   │   │   └── postgres.go      # Pool de conexões pgx/stdlib
 │   │   ├── repository/postgres/ # Implementações concretas dos repositórios em PostgreSQL
 │   │   │   ├── exam/            # exam_repository.go, create.go, get_by_id.go, update.go, etc.
 │   │   │   ├── user/            # user_repository.go, create.go, get_by_id.go, get_by_email.go, update.go
@@ -41,15 +46,16 @@ mentor-v2.1/
 │       ├── middleware/          # Autenticação JWT, Logging estruturado, Recuperação e CORS
 │       ├── response/            # Padronização de respostas JSON e mapeador de erros
 │       └── router.go            # Configuração das rotas Chi v5
-├── migrations/                  # Scripts SQL DDL correspondentes ao schema.prisma
-│   └── 000001_init_schema.sql
+├── migrations/                  # Arquivos de migração versionados (executados em ordem determinística)
+│   ├── 000001_init_schema.sql           # V1: Criação de tabelas e índices básicos
+│   └── 000002_add_analytics_indexes.sql # V2: Índices para consultas analíticas e performance
 ├── tests/                       # Testes automatizados e de integração SEPARADOS do código-fonte
 │   ├── mocks/                   # Implementações em memória dos repositórios para testes
-│   ├── unit/                    # Testes unitários dos casos de uso e regras de negócio
+│   ├── unit/                    # Testes unitários dos casos de uso, regras de negócio e migrador
 │   └── integration/             # Testes de integração end-to-end das rotas HTTP
 ├── Dockerfile                   # Build multi-etapas minimalista em Alpine
 ├── docker-compose.yml           # Orquestração do banco PostgreSQL + API
-├── Makefile                     # Atalhos para compilação, testes e execução
+├── Makefile                     # Atalhos para compilação, testes, migrações e execução
 └── schema.prisma                # Esquema de dados original Prisma
 ```
 
@@ -105,7 +111,21 @@ make test-integration
 
 ---
 
-## 🚀 5. Como Executar o Projeto
+## 🗄️ 5. Controle de Versão do Esquema de Banco de Dados (Migrations)
+
+O projeto possui um sistema próprio de **controle de versão incremental do esquema** implementado em `internal/infrastructure/database/migrator.go`, garantindo que alterações estruturais sejam aplicadas em ordem determinística e apenas uma vez:
+
+- **Tabela de Auditoria (`schema_migrations`)**: Registra cada arquivo de migração executado e seu timestamp (`version`, `applied_at`).
+- **Arquivos Versionados (`migrations/*.sql`)**:
+  - `000001_init_schema.sql`: Definição inicial de tabelas (`users`, `questions`, `question_topics`, `question_images`, `alternatives`, `exams`, `exam_areas`, `questions_on_exams`, `histories`) e índices estruturais.
+  - `000002_add_analytics_indexes.sql`: Índices compostos específicos para otimização de consultas analíticas e relatórios de performance (`idx_qoe_got_right`, `idx_histories_finished`, `idx_qoe_updated_at`, `idx_exams_user_date`).
+- **Execução Automática e Transacional**:
+  - Na inicialização da API (`cmd/api/main.go`), o migrador lê os arquivos embutidos via `embed.FS`, identifica quais versões ainda não foram aplicadas e as executa individualmente dentro de transações atômicas (`BEGIN ... COMMIT`).
+  - Pode ser disparado manualmente via CLI com `make migrate` (`cmd/migrate/main.go`).
+
+---
+
+## 🚀 6. Como Executar o Projeto
 
 ### Pré-requisitos
 - [Go 1.22+](https://go.dev/) instalado (ou Docker)
@@ -136,7 +156,7 @@ make seed
 
 ---
 
-## 📡 6. Endpoints da API
+## 📡 7. Endpoints da API
 
 ### Autenticação (Pública)
 

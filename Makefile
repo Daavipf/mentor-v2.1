@@ -3,6 +3,7 @@
 build:
 	go build -o bin/api ./cmd/api
 	go build -o bin/seeder ./cmd/seeder
+	go build -o bin/migrate ./cmd/migrate
 
 run:
 	go run ./cmd/api
@@ -15,6 +16,9 @@ test-unit:
 
 test-integration:
 	go test -v ./tests/integration/...
+
+migrate:
+	go run ./cmd/migrate
 
 seed:
 	go run ./cmd/seeder
