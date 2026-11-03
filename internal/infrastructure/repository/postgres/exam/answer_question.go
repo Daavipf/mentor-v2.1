@@ -6,13 +6,13 @@ import (
 	"time"
 )
 
-func (r *examRepository) AnswerQuestion(ctx context.Context, examID, questionID, alternativeID string, gotRight bool) error {
+func (r *examRepository) AnswerQuestion(ctx context.Context, examID, questionID, alternativeID string, startedAt, finishedAt time.Time, gotRight bool) error {
 	query := `
 		UPDATE questions_on_exams
-		SET selected_alternative_id = $1, got_right = $2, updated_at = $3
-		WHERE exam_id = $4 AND question_id = $5
+		SET selected_alternative_id = $1, got_right = $2, updated_at = $3, started_at = $4, finished_at = $5
+		WHERE exam_id = $6 AND question_id = $7
 	`
-	res, err := r.db.ExecContext(ctx, query, alternativeID, gotRight, time.Now(), examID, questionID)
+	res, err := r.db.ExecContext(ctx, query, alternativeID, gotRight, time.Now(), startedAt, finishedAt, examID, questionID)
 	if err != nil {
 		return err
 	}
@@ -21,6 +21,7 @@ func (r *examRepository) AnswerQuestion(ctx context.Context, examID, questionID,
 	if err != nil {
 		return err
 	}
+
 	if rows == 0 {
 		return domain.ErrQuestionNotInExam
 	}

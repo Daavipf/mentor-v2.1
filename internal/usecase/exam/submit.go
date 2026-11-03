@@ -36,7 +36,7 @@ func (u *examUseCase) SubmitExam(ctx context.Context, examID, userID string, ans
 			return nil, err
 		}
 
-		u.examRepo.AnswerQuestion(ctx, examID, answer.QuestionID, answer.SelectedAlternativeID, isCorrect)
+		u.examRepo.AnswerQuestion(ctx, examID, answer.QuestionID, answer.SelectedAlternativeID, *answer.StartedAt, *answer.FinishedAt, isCorrect)
 	}
 
 	totalQuestions := len(exam.Questions)

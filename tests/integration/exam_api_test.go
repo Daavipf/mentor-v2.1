@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"mentor-api/internal/interface/http/response"
 	"mentor-api/internal/usecase/auth"
@@ -67,6 +68,8 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 
 	// Monta a lista de respostas iterando sobre as questões do exame criado
 	var answersPayload []exam.AnswerQuestionInput
+	now := time.Now()
+	sat := now.Add(-10 * time.Minute)
 	for _, qItem := range questions {
 		qMap := qItem.(map[string]interface{})
 		qID := qMap["question_id"].(string)
@@ -76,6 +79,8 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 		answersPayload = append(answersPayload, exam.AnswerQuestionInput{
 			QuestionID:            qID,
 			SelectedAlternativeID: altID,
+			StartedAt:             &sat,
+			FinishedAt:            &now,
 		})
 	}
 

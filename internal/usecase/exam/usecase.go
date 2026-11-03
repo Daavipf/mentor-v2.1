@@ -196,7 +196,7 @@ func (u *examUseCase) AnswerQuestion(ctx context.Context, userID string, examID 
 		return err
 	}
 
-	return u.examRepo.AnswerQuestion(ctx, examID, input.QuestionID, input.SelectedAlternativeID, isCorrect)
+	return u.examRepo.AnswerQuestion(ctx, examID, input.QuestionID, input.SelectedAlternativeID, *input.StartedAt, *input.FinishedAt, isCorrect)
 }
 
 func (u *examUseCase) FinishExam(ctx context.Context, userID string, examID string) (*FinishExamResponse, error) {
