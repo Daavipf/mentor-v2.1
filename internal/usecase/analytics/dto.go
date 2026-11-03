@@ -28,7 +28,7 @@ type OverviewResponse struct {
 	AverageExamScore       float64               `json:"average_exam_score"`
 	PerformanceByArea      []AreaPerformanceDTO  `json:"performance_by_area"`
 	RecentStudyRhythm      []DailyStudyRhythmDTO `json:"recent_study_rhythm"`
-	AverageQuestionTime    int                   `json:"average_question_time"`
+	AverageQuestionTime    float64               `json:"average_question_time"`
 }
 
 // ByDisciplineFilterInput holds query parameters for discipline performance.

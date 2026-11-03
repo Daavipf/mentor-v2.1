@@ -11,7 +11,7 @@ type OverviewMetrics struct {
 	AverageExamScore       float64            `json:"average_exam_score"`
 	PerformanceByArea      []AreaPerformance  `json:"performance_by_area,omitempty"`
 	RecentStudyRhythm      []DailyStudyRhythm `json:"recent_study_rhythm,omitempty"`
-	AverageQuestionTime    int                `json:"average_question_time"`
+	AverageQuestionTime    float64            `json:"average_question_time"`
 }
 
 // AreaPerformance represents accuracy and question volume per knowledge area.
