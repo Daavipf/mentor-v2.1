@@ -28,82 +28,82 @@ func NewAnalyticsUseCase(analyticsRepo repository.AnalyticsRepository) UseCase {
 	}
 }
 
-func (u *analyticsUseCase) GetOverview(ctx context.Context, userID string) (*OverviewResponse, error) {
-	if userID == "" {
-		return nil, domain.ErrUnauthorized
-	}
+// func (u *analyticsUseCase) GetOverview(ctx context.Context, userID string) (*OverviewResponse, error) {
+// 	if userID == "" {
+// 		return nil, domain.ErrUnauthorized
+// 	}
 
-	metrics, err := u.analyticsRepo.GetOverview(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
+// 	metrics, err := u.analyticsRepo.GetOverview(ctx, userID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	areasDTO := make([]AreaPerformanceDTO, 0, len(metrics.PerformanceByArea))
-	for _, a := range metrics.PerformanceByArea {
-		areasDTO = append(areasDTO, AreaPerformanceDTO{
-			Area:           a.Area,
-			TotalQuestions: a.TotalQuestions,
-			CorrectAnswers: a.CorrectAnswers,
-			AccuracyRate:   a.AccuracyRate,
-		})
-	}
+// 	areasDTO := make([]AreaPerformanceDTO, 0, len(metrics.PerformanceByArea))
+// 	for _, a := range metrics.PerformanceByArea {
+// 		areasDTO = append(areasDTO, AreaPerformanceDTO{
+// 			Area:           a.Area,
+// 			TotalQuestions: a.TotalQuestions,
+// 			CorrectAnswers: a.CorrectAnswers,
+// 			AccuracyRate:   a.AccuracyRate,
+// 		})
+// 	}
 
-	rhythmDTO := make([]DailyStudyRhythmDTO, 0, len(metrics.RecentStudyRhythm))
-	for _, r := range metrics.RecentStudyRhythm {
-		rhythmDTO = append(rhythmDTO, DailyStudyRhythmDTO{
-			Date:           r.Date,
-			TotalQuestions: r.TotalQuestions,
-			CorrectAnswers: r.CorrectAnswers,
-		})
-	}
+// 	rhythmDTO := make([]DailyStudyRhythmDTO, 0, len(metrics.RecentStudyRhythm))
+// 	for _, r := range metrics.RecentStudyRhythm {
+// 		rhythmDTO = append(rhythmDTO, DailyStudyRhythmDTO{
+// 			Date:           r.Date,
+// 			TotalQuestions: r.TotalQuestions,
+// 			CorrectAnswers: r.CorrectAnswers,
+// 		})
+// 	}
 
-	return &OverviewResponse{
-		TotalQuestionsAnswered: metrics.TotalQuestionsAnswered,
-		TotalCorrectAnswers:    metrics.TotalCorrectAnswers,
-		OverallAccuracyRate:    metrics.OverallAccuracyRate,
-		TotalCompletedExams:    metrics.TotalCompletedExams,
-		AverageExamScore:       metrics.AverageExamScore,
-		PerformanceByArea:      areasDTO,
-		RecentStudyRhythm:      rhythmDTO,
-	}, nil
-}
+// 	return &OverviewResponse{
+// 		TotalQuestionsAnswered: metrics.TotalQuestionsAnswered,
+// 		TotalCorrectAnswers:    metrics.TotalCorrectAnswers,
+// 		OverallAccuracyRate:    metrics.OverallAccuracyRate,
+// 		TotalCompletedExams:    metrics.TotalCompletedExams,
+// 		AverageExamScore:       metrics.AverageExamScore,
+// 		PerformanceByArea:      areasDTO,
+// 		RecentStudyRhythm:      rhythmDTO,
+// 	}, nil
+// }
 
-func (u *analyticsUseCase) GetByDiscipline(
-	ctx context.Context,
-	userID string,
-	filter ByDisciplineFilterInput,
-) (*ByDisciplineResponse, error) {
-	if userID == "" {
-		return nil, domain.ErrUnauthorized
-	}
+// func (u *analyticsUseCase) GetByDiscipline(
+// 	ctx context.Context,
+// 	userID string,
+// 	filter ByDisciplineFilterInput,
+// ) (*ByDisciplineResponse, error) {
+// 	if userID == "" {
+// 		return nil, domain.ErrUnauthorized
+// 	}
 
-	repoFilter := repository.DisciplineFilter{
-		StartDate: filter.StartDate,
-		EndDate:   filter.EndDate,
-		Area:      filter.Area,
-	}
+// 	repoFilter := repository.DisciplineFilter{
+// 		StartDate: filter.StartDate,
+// 		EndDate:   filter.EndDate,
+// 		Area:      filter.Area,
+// 	}
 
-	disciplines, err := u.analyticsRepo.GetPerformanceByDiscipline(ctx, userID, repoFilter)
-	if err != nil {
-		return nil, err
-	}
+// 	disciplines, err := u.analyticsRepo.GetPerformanceByDiscipline(ctx, userID, repoFilter)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	list := make([]DisciplinePerformanceDTO, 0, len(disciplines))
-	for _, d := range disciplines {
-		list = append(list, DisciplinePerformanceDTO{
-			Discipline:     d.Discipline,
-			Area:           d.Area,
-			TotalQuestions: d.TotalQuestions,
-			CorrectAnswers: d.CorrectAnswers,
-			AccuracyRate:   d.AccuracyRate,
-		})
-	}
+// 	list := make([]DisciplinePerformanceDTO, 0, len(disciplines))
+// 	for _, d := range disciplines {
+// 		list = append(list, DisciplinePerformanceDTO{
+// 			Discipline:     d.Discipline,
+// 			Area:           d.Area,
+// 			TotalQuestions: d.TotalQuestions,
+// 			CorrectAnswers: d.CorrectAnswers,
+// 			AccuracyRate:   d.AccuracyRate,
+// 		})
+// 	}
 
-	return &ByDisciplineResponse{
-		Disciplines:      list,
-		TotalDisciplines: len(list),
-	}, nil
-}
+// 	return &ByDisciplineResponse{
+// 		Disciplines:      list,
+// 		TotalDisciplines: len(list),
+// 	}, nil
+// }
 
 func (u *analyticsUseCase) GetTopicsRanking(
 	ctx context.Context,
@@ -274,4 +274,3 @@ func (u *analyticsUseCase) GetExamsHistory(ctx context.Context, userID string) (
 		ScoreEvolutionPercentage: scoreEvolutionPercentage,
 	}, nil
 }
-

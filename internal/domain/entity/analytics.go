@@ -4,13 +4,14 @@ import "time"
 
 // OverviewMetrics represents executive summary metrics for a given user.
 type OverviewMetrics struct {
-	TotalQuestionsAnswered int                  `json:"total_questions_answered"`
-	TotalCorrectAnswers    int                  `json:"total_correct_answers"`
-	OverallAccuracyRate    float64              `json:"overall_accuracy_rate"`
-	TotalCompletedExams    int                  `json:"total_completed_exams"`
-	AverageExamScore       float64              `json:"average_exam_score"`
-	PerformanceByArea      []AreaPerformance    `json:"performance_by_area,omitempty"`
-	RecentStudyRhythm      []DailyStudyRhythm   `json:"recent_study_rhythm,omitempty"`
+	TotalQuestionsAnswered int                `json:"total_questions_answered"`
+	TotalCorrectAnswers    int                `json:"total_correct_answers"`
+	OverallAccuracyRate    float64            `json:"overall_accuracy_rate"`
+	TotalCompletedExams    int                `json:"total_completed_exams"`
+	AverageExamScore       float64            `json:"average_exam_score"`
+	PerformanceByArea      []AreaPerformance  `json:"performance_by_area,omitempty"`
+	RecentStudyRhythm      []DailyStudyRhythm `json:"recent_study_rhythm,omitempty"`
+	AverageQuestionTime    int                `json:"average_question_time"`
 }
 
 // AreaPerformance represents accuracy and question volume per knowledge area.
@@ -79,4 +80,3 @@ type ExamsHistoryAnalytics struct {
 	RecentAverageScore       float64                  `json:"recent_average_score"`
 	ScoreEvolutionPercentage float64                  `json:"score_evolution_percentage"`
 }
-

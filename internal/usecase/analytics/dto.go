@@ -28,6 +28,7 @@ type OverviewResponse struct {
 	AverageExamScore       float64               `json:"average_exam_score"`
 	PerformanceByArea      []AreaPerformanceDTO  `json:"performance_by_area"`
 	RecentStudyRhythm      []DailyStudyRhythmDTO `json:"recent_study_rhythm"`
+	AverageQuestionTime    int                   `json:"average_question_time"`
 }
 
 // ByDisciplineFilterInput holds query parameters for discipline performance.
@@ -102,4 +103,3 @@ type ExamsHistoryResponse struct {
 	RecentAverageScore       float64                     `json:"recent_average_score"`
 	ScoreEvolutionPercentage float64                     `json:"score_evolution_percentage"`
 }
-
