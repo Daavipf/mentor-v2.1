@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/usecase/exam"
 	"mentor-api/internal/usecase/question"
 	"mentor-api/tests/mocks"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func setupExamUseCase() (exam.UseCase, question.Service) {
@@ -94,6 +95,52 @@ func TestExam_UserIsolation_ForbiddenAccess(t *testing.T) {
 	assert.Empty(t, user2Exams)
 }
 
+func TestExam_SubmitExam(t *testing.T) {
+	examUC, qService := setupExamUseCase()
+	ctx := context.Background()
+	userID := "user-1"
+
+	created, err := examUC.CreateExam(ctx, userID, exam.CreateExamInput{
+		Title:         "Simulado Completo",
+		QuestionCount: 3,
+	})
+
+	require.NoError(t, err)
+	require.NotEmpty(t, created.Questions)
+
+	var answers []exam.AnswerQuestionInput
+
+	for _, q := range created.Questions {
+		fullQ, err := qService.GetQuestionByID(ctx, q.QuestionID)
+		require.NoError(t, err)
+
+		var selectedAltID string
+		for _, alt := range fullQ.Alternatives {
+			if alt.IsCorrect {
+				selectedAltID = alt.ID
+				break
+			}
+		}
+
+		require.NotEmpty(t, selectedAltID, "A questão deve possuir uma alternativa correta")
+
+		answers = append(answers, exam.AnswerQuestionInput{
+			QuestionID:            q.QuestionID,
+			SelectedAlternativeID: selectedAltID,
+		})
+	}
+
+	response, err := examUC.SubmitExam(ctx, created.ID, userID, answers)
+
+	require.NoError(t, err)
+	require.NotNil(t, response)
+	require.Equal(t, created.ID, response.ExamID)
+	require.Equal(t, len(created.Questions), response.TotalQuestions)
+	require.Equal(t, len(created.Questions), response.CorrectAnswers)
+	require.Equal(t, 100, response.Score)
+	require.False(t, response.FinishedAt.IsZero())
+}
+
 func TestExam_AnswerAndFinish(t *testing.T) {
 	examUC, qService := setupExamUseCase()
 	ctx := context.Background()
@@ -175,4 +222,3 @@ func TestExam_Delete_OwnerOnly(t *testing.T) {
 	_, err = examUC.GetExamByID(ctx, userID, created.ID)
 	assert.ErrorIs(t, err, domain.ErrNotFound)
 }
-

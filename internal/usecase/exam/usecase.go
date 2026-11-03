@@ -5,11 +5,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/domain/entity"
 	"mentor-api/internal/domain/repository"
 	"mentor-api/internal/usecase/question"
+
+	"github.com/google/uuid"
 )
 
 type UseCase interface {
@@ -19,6 +20,7 @@ type UseCase interface {
 	AnswerQuestion(ctx context.Context, userID string, examID string, input AnswerQuestionInput) error
 	FinishExam(ctx context.Context, userID string, examID string) (*FinishExamResponse, error)
 	DeleteExam(ctx context.Context, userID string, examID string) error
+	SubmitExam(ctx context.Context, examID, userID string, answers []AnswerQuestionInput) (*FinishExamResponse, error)
 }
 
 type examUseCase struct {
@@ -339,4 +341,3 @@ func (u *examUseCase) mapToExamResponse(exam *entity.Exam, isFinished bool, scor
 		UpdatedAt:      exam.UpdatedAt,
 	}
 }
-

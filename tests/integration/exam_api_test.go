@@ -8,11 +8,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"mentor-api/internal/interface/http/response"
 	"mentor-api/internal/usecase/auth"
 	"mentor-api/internal/usecase/exam"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func registerAndGetToken(t *testing.T, app *TestApp, name, email string) string {
@@ -64,10 +65,19 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 	require.NotEmpty(t, examID)
 	require.NotEmpty(t, questions)
 
-	firstQuestion := questions[0].(map[string]interface{})
-	firstQuestionID := firstQuestion["question_id"].(string)
-	firstAlts := firstQuestion["alternatives"].([]interface{})
-	firstAltID := firstAlts[0].(map[string]interface{})["id"].(string)
+	// Monta a lista de respostas iterando sobre as questões do exame criado
+	var answersPayload []exam.AnswerQuestionInput
+	for _, qItem := range questions {
+		qMap := qItem.(map[string]interface{})
+		qID := qMap["question_id"].(string)
+		alts := qMap["alternatives"].([]interface{})
+		altID := alts[0].(map[string]interface{})["id"].(string)
+
+		answersPayload = append(answersPayload, exam.AnswerQuestionInput{
+			QuestionID:            qID,
+			SelectedAlternativeID: altID,
+		})
+	}
 
 	// 2. User 1 can view their exam
 	reqGet := httptest.NewRequest(http.MethodGet, "/api/v1/exams/"+examID, nil)
@@ -83,48 +93,38 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 	app.Router.ServeHTTP(wGetU2, reqGetU2)
 	assert.Equal(t, http.StatusForbidden, wGetU2.Code)
 
-	// 4. User 2 attempts to answer User 1's question -> MUST BE 403 Forbidden
-	answerPayload := exam.AnswerQuestionInput{
-		QuestionID:            firstQuestionID,
-		SelectedAlternativeID: firstAltID,
-	}
-	ansBody, _ := json.Marshal(answerPayload)
-	reqAnsU2 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/answers", examID), bytes.NewBuffer(ansBody))
-	reqAnsU2.Header.Set("Authorization", "Bearer "+tokenUser2)
-	reqAnsU2.Header.Set("Content-Type", "application/json")
-	wAnsU2 := httptest.NewRecorder()
-	app.Router.ServeHTTP(wAnsU2, reqAnsU2)
-	assert.Equal(t, http.StatusForbidden, wAnsU2.Code)
+	// 4. User 2 attempts to submit User 1's exam -> MUST BE 403 Forbidden
+	submitBody, _ := json.Marshal(answersPayload)
+	reqSubU2 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/submit", examID), bytes.NewBuffer(submitBody))
+	reqSubU2.Header.Set("Authorization", "Bearer "+tokenUser2)
+	reqSubU2.Header.Set("Content-Type", "application/json")
+	wSubU2 := httptest.NewRecorder()
+	app.Router.ServeHTTP(wSubU2, reqSubU2)
+	assert.Equal(t, http.StatusForbidden, wSubU2.Code)
 
-	// 5. User 1 submits an answer -> 200 OK
-	reqAnsU1 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/answers", examID), bytes.NewBuffer(ansBody))
-	reqAnsU1.Header.Set("Authorization", "Bearer "+tokenUser1)
-	reqAnsU1.Header.Set("Content-Type", "application/json")
-	wAnsU1 := httptest.NewRecorder()
-	app.Router.ServeHTTP(wAnsU1, reqAnsU1)
-	assert.Equal(t, http.StatusOK, wAnsU1.Code)
+	// 5. User 1 submits the exam -> 200 OK
+	reqSubU1 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/submit", examID), bytes.NewBuffer(submitBody))
+	reqSubU1.Header.Set("Authorization", "Bearer "+tokenUser1)
+	reqSubU1.Header.Set("Content-Type", "application/json")
+	wSubU1 := httptest.NewRecorder()
+	app.Router.ServeHTTP(wSubU1, reqSubU1)
+	assert.Equal(t, http.StatusOK, wSubU1.Code)
 
-	// 6. User 2 attempts to finish User 1's exam -> MUST BE 403 Forbidden
-	reqFinishU2 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/finish", examID), nil)
-	reqFinishU2.Header.Set("Authorization", "Bearer "+tokenUser2)
-	wFinishU2 := httptest.NewRecorder()
-	app.Router.ServeHTTP(wFinishU2, reqFinishU2)
-	assert.Equal(t, http.StatusForbidden, wFinishU2.Code)
+	var submitResp response.APIResponse
+	_ = json.Unmarshal(wSubU1.Body.Bytes(), &submitResp)
+	submitData := submitResp.Data.(map[string]interface{})
+	assert.Equal(t, examID, submitData["exam_id"])
+	assert.NotNil(t, submitData["score"])
 
-	// 7. User 1 finishes the exam -> 200 OK
-	reqFinishU1 := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/finish", examID), nil)
-	reqFinishU1.Header.Set("Authorization", "Bearer "+tokenUser1)
-	wFinishU1 := httptest.NewRecorder()
-	app.Router.ServeHTTP(wFinishU1, reqFinishU1)
-	assert.Equal(t, http.StatusOK, wFinishU1.Code)
+	// 6. User 1 attempts to submit the same exam again -> MUST BE 400 Bad Request or 409 Conflict
+	reqSubAgain := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/submit", examID), bytes.NewBuffer(submitBody))
+	reqSubAgain.Header.Set("Authorization", "Bearer "+tokenUser1)
+	reqSubAgain.Header.Set("Content-Type", "application/json")
+	wSubAgain := httptest.NewRecorder()
+	app.Router.ServeHTTP(wSubAgain, reqSubAgain)
+	assert.NotEqual(t, http.StatusOK, wSubAgain.Code, "Re-submitting an already finished exam should fail")
 
-	var finishResp response.APIResponse
-	_ = json.Unmarshal(wFinishU1.Body.Bytes(), &finishResp)
-	finishData := finishResp.Data.(map[string]interface{})
-	assert.Equal(t, examID, finishData["exam_id"])
-	assert.NotNil(t, finishData["score"])
-
-	// 8. User 1 lists histories -> contains finished exam
+	// 7. User 1 lists histories -> contains finished exam
 	reqHistU1 := httptest.NewRequest(http.MethodGet, "/api/v1/histories", nil)
 	reqHistU1.Header.Set("Authorization", "Bearer "+tokenUser1)
 	wHistU1 := httptest.NewRecorder()
@@ -148,7 +148,7 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 	histU2List := histU2Resp.Data.([]interface{})
 	assert.Empty(t, histU2List)
 
-	// 9. Verify that Question and Alternative endpoints DO NOT EXIST on HTTP
+	// 8. Verify that Question and Alternative endpoints DO NOT EXIST on HTTP
 	reqQuestionHTTP := httptest.NewRequest(http.MethodGet, "/api/v1/questions", nil)
 	wQuestionHTTP := httptest.NewRecorder()
 	app.Router.ServeHTTP(wQuestionHTTP, reqQuestionHTTP)
@@ -159,4 +159,3 @@ func TestIntegration_Exam_And_Security_Isolation(t *testing.T) {
 	app.Router.ServeHTTP(wAltHTTP, reqAltHTTP)
 	assert.Equal(t, http.StatusNotFound, wAltHTTP.Code, "Alternatives must NOT be exposed via HTTP endpoints")
 }
-

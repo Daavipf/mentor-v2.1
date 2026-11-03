@@ -180,8 +180,21 @@ Lista os simulados pertencentes exclusivamente ao usuário autenticado.
 #### `GET /api/v1/exams/{id}`
 Obtém os detalhes de um simulado do usuário (questões, alternativas, respostas salvas). Se o simulado não estiver finalizado, a resposta correta não é exibida.
 
+#### `POST /api/v1/exams/{id}/submit`
+Envia um lote de questões respondidas na modalidade de simulado:
+```json
+{
+  "answers":[
+    "question":{
+      "question_id": "uuid-da-questao",
+      "selected_alternative_id": "uuid-da-alternativa"
+    }
+  ]
+}
+```
+
 #### `POST /api/v1/exams/{id}/answers`
-Registra a resposta do usuário a uma questão do simulado:
+Registra a resposta do usuário a uma questão na modalidade sprint:
 ```json
 {
   "question_id": "uuid-da-questao",
@@ -190,7 +203,7 @@ Registra a resposta do usuário a uma questão do simulado:
 ```
 
 #### `POST /api/v1/exams/{id}/finish`
-Finaliza o simulado, calcula a nota (`score`), gera o registro em `History` e disponibiliza o gabarito.
+Finaliza um simulado na modalidade sprint, calcula a nota (`score`), gera o registro em `History` e disponibiliza o gabarito.
 ```json
 {
   "success": true,

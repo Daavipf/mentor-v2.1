@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/interface/http/middleware"
 	"mentor-api/internal/usecase/exam"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type ExamHandler struct {
@@ -78,6 +79,34 @@ func (h *ExamHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	SendSuccess(w, http.StatusOK, res)
+}
+
+func (h *ExamHandler) SubmitExam(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r.Context())
+	if !ok || userID == "" {
+		SendError(w, domain.ErrUnauthorized)
+		return
+	}
+
+	examID := chi.URLParam(r, "id")
+	if examID == "" {
+		SendError(w, domain.ErrInvalidInput)
+		return
+	}
+
+	var answers []exam.AnswerQuestionInput
+	if err := json.NewDecoder(r.Body).Decode(&answers); err != nil {
+		SendError(w, domain.ErrInvalidInput)
+		return
+	}
+
+	response, err := h.examUseCase.SubmitExam(r.Context(), examID, userID, answers)
+	if err != nil {
+		SendError(w, err)
+		return
+	}
+
+	SendSuccess(w, http.StatusOK, response)
 }
 
 func (h *ExamHandler) AnswerQuestion(w http.ResponseWriter, r *http.Request) {
@@ -155,4 +184,3 @@ func (h *ExamHandler) Delete(w http.ResponseWriter, r *http.Request) {
 		"message": "Exam deleted successfully",
 	})
 }
-

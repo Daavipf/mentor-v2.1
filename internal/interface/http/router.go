@@ -67,6 +67,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 				r.Get("/{id}", cfg.ExamHandler.GetByID)
 				r.Post("/{id}/answers", cfg.ExamHandler.AnswerQuestion)
 				r.Post("/{id}/finish", cfg.ExamHandler.Finish)
+				r.Post("/{id}/submit", cfg.ExamHandler.SubmitExam)
 				r.Delete("/{id}", cfg.ExamHandler.Delete)
 			})
 
@@ -80,4 +81,3 @@ func NewRouter(cfg RouterConfig) http.Handler {
 
 	return r
 }
-
