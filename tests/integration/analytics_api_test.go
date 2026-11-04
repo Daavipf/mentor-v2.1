@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -63,6 +64,9 @@ func TestIntegration_Analytics_FullFlow_And_UserIsolation(t *testing.T) {
 	questions := examData["questions"].([]interface{})
 	require.NotEmpty(t, questions)
 
+	now := time.Now()
+	sat := now.Add(-10 * time.Minute)
+
 	// User 1 answers all questions
 	for _, qItem := range questions {
 		qMap := qItem.(map[string]interface{})
@@ -73,6 +77,8 @@ func TestIntegration_Analytics_FullFlow_And_UserIsolation(t *testing.T) {
 		ansPayload := exam.AnswerQuestionInput{
 			QuestionID:            qID,
 			SelectedAlternativeID: firstAltID,
+			StartedAt:             &sat,
+			FinishedAt:            &now,
 		}
 		ansBody, _ := json.Marshal(ansPayload)
 		reqAns := httptest.NewRequest(http.MethodPost, fmt.Sprintf("/api/v1/exams/%s/answers", examID), bytes.NewBuffer(ansBody))
@@ -187,4 +193,3 @@ func TestIntegration_Analytics_FullFlow_And_UserIsolation(t *testing.T) {
 	u2ExamsList := u2HistData["exams"].([]interface{})
 	assert.Empty(t, u2ExamsList)
 }
-

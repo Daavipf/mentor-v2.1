@@ -81,7 +81,7 @@ func (m *MockExamRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (m *MockExamRepository) AnswerQuestion(ctx context.Context, examID, questionID, alternativeID string, gotRight bool) error {
+func (m *MockExamRepository) AnswerQuestion(ctx context.Context, examID, questionID, alternativeID string, startedAt, finishedAt time.Time, gotRight bool) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
@@ -96,6 +96,8 @@ func (m *MockExamRepository) AnswerQuestion(ctx context.Context, examID, questio
 			exam.Questions[i].SelectedAlternativeID = &alternativeID
 			exam.Questions[i].GotRight = &gotRight
 			exam.Questions[i].UpdatedAt = time.Now()
+			exam.Questions[i].StartedAt = &startedAt
+			exam.Questions[i].FinishedAt = &finishedAt
 			found = true
 			break
 		}
@@ -126,4 +128,3 @@ func (m *MockExamRepository) GetQuestionOnExam(ctx context.Context, examID, ques
 
 	return nil, domain.ErrQuestionNotInExam
 }
-

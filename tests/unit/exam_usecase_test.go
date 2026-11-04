@@ -3,6 +3,7 @@ package unit
 import (
 	"context"
 	"testing"
+	"time"
 
 	"mentor-api/internal/domain"
 	"mentor-api/internal/usecase/exam"
@@ -124,9 +125,14 @@ func TestExam_SubmitExam(t *testing.T) {
 
 		require.NotEmpty(t, selectedAltID, "A questão deve possuir uma alternativa correta")
 
+		now := time.Now()
+		sat := now.Add(-10 * time.Minute)
+
 		answers = append(answers, exam.AnswerQuestionInput{
 			QuestionID:            q.QuestionID,
 			SelectedAlternativeID: selectedAltID,
+			StartedAt:             &sat,
+			FinishedAt:            &now,
 		})
 	}
 
@@ -167,9 +173,13 @@ func TestExam_AnswerAndFinish(t *testing.T) {
 			}
 		}
 
+		now := time.Now()
+		sat := now.Add(-10 * time.Minute)
 		err = examUC.AnswerQuestion(ctx, userID, created.ID, exam.AnswerQuestionInput{
 			QuestionID:            q.QuestionID,
 			SelectedAlternativeID: selectedAltID,
+			StartedAt:             &sat,
+			FinishedAt:            &now,
 		})
 		require.NoError(t, err)
 	}

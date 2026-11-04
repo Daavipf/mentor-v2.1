@@ -128,6 +128,11 @@ func (h *ExamHandler) AnswerQuestion(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := input.Validate(); err != nil {
+		SendError(w, err)
+		return
+	}
+
 	err := h.examUseCase.AnswerQuestion(r.Context(), userID, examID, input)
 	if err != nil {
 		SendError(w, err)

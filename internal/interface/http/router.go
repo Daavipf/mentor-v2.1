@@ -82,6 +82,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 			r.Route("/analytics", func(r chi.Router) {
 				r.Get("/overview", cfg.AnalyticsHandler.Overview)
 				r.Get("/by-discipline", cfg.AnalyticsHandler.ByDiscipline)
+				r.Get("/by-area", cfg.AnalyticsHandler.ByArea)
 				r.Get("/topics-ranking", cfg.AnalyticsHandler.TopicsRanking)
 				r.Get("/evolution", cfg.AnalyticsHandler.Evolution)
 				r.Get("/exams-history", cfg.AnalyticsHandler.ExamsHistory)

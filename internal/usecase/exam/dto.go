@@ -3,15 +3,17 @@ package exam
 import "time"
 
 type CreateExamInput struct {
-	Title         string   `json:"title"`
+	Title         string     `json:"title"`
 	Date          *time.Time `json:"date,omitempty"`
-	Areas         []string `json:"areas"`
-	QuestionCount int      `json:"question_count"`
+	Areas         []string   `json:"areas"`
+	QuestionCount int        `json:"question_count"`
 }
 
 type AnswerQuestionInput struct {
-	QuestionID            string `json:"question_id"`
-	SelectedAlternativeID string `json:"selected_alternative_id"`
+	QuestionID            string     `json:"question_id"`
+	SelectedAlternativeID string     `json:"selected_alternative_id"`
+	StartedAt             *time.Time `json:"started_at"`
+	FinishedAt            *time.Time `json:"finished_at"`
 }
 
 type ExamAlternativeDTO struct {
@@ -72,4 +74,3 @@ type FinishExamResponse struct {
 	Score          int       `json:"score"`
 	FinishedAt     time.Time `json:"finished_at"`
 }
-

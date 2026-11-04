@@ -6,10 +6,16 @@ import (
 
 // AreaPerformanceDTO represents performance in a specific knowledge area.
 type AreaPerformanceDTO struct {
-	Area           string  `json:"area"`
-	TotalQuestions int     `json:"total_questions"`
-	CorrectAnswers int     `json:"correct_answers"`
-	AccuracyRate   float64 `json:"accuracy_rate"`
+	Area                string  `json:"area"`
+	TotalQuestions      int     `json:"total_questions"`
+	CorrectAnswers      int     `json:"correct_answers"`
+	AccuracyRate        float64 `json:"accuracy_rate"`
+	AverageQuestionTime float64 `json:"average_question_time"`
+}
+
+// ByAreaResponse encapsula a resposta contendo a performance por áreas.
+type ByAreaResponse struct {
+	Areas []AreaPerformanceDTO `json:"areas"`
 }
 
 // DailyStudyRhythmDTO represents question volume answered per day.
@@ -28,6 +34,7 @@ type OverviewResponse struct {
 	AverageExamScore       float64               `json:"average_exam_score"`
 	PerformanceByArea      []AreaPerformanceDTO  `json:"performance_by_area"`
 	RecentStudyRhythm      []DailyStudyRhythmDTO `json:"recent_study_rhythm"`
+	AverageQuestionTime    float64               `json:"average_question_time"`
 }
 
 // ByDisciplineFilterInput holds query parameters for discipline performance.
@@ -39,11 +46,12 @@ type ByDisciplineFilterInput struct {
 
 // DisciplinePerformanceDTO represents performance in a single discipline.
 type DisciplinePerformanceDTO struct {
-	Discipline     string  `json:"discipline"`
-	Area           string  `json:"area"`
-	TotalQuestions int     `json:"total_questions"`
-	CorrectAnswers int     `json:"correct_answers"`
-	AccuracyRate   float64 `json:"accuracy_rate"`
+	Discipline          string  `json:"discipline"`
+	Area                string  `json:"area"`
+	TotalQuestions      int     `json:"total_questions"`
+	CorrectAnswers      int     `json:"correct_answers"`
+	AccuracyRate        float64 `json:"accuracy_rate"`
+	AverageQuestionTime float64 `json:"average_question_time"`
 }
 
 // ByDisciplineResponse wraps discipline performance results.
@@ -102,4 +110,3 @@ type ExamsHistoryResponse struct {
 	RecentAverageScore       float64                     `json:"recent_average_score"`
 	ScoreEvolutionPercentage float64                     `json:"score_evolution_percentage"`
 }
-

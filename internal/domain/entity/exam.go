@@ -17,6 +17,8 @@ type QuestionsOnExam struct {
 	ExamID                string       `json:"exam_id"`
 	GotRight              *bool        `json:"got_right,omitempty"`
 	SelectedAlternativeID *string      `json:"selected_alternative_id,omitempty"`
+	StartedAt             *time.Time   `json:"started_at"`
+	FinishedAt            *time.Time   `json:"finished_at"`
 	CreatedAt             time.Time    `json:"created_at"`
 	UpdatedAt             time.Time    `json:"updated_at"`
 	Question              *Question    `json:"question,omitempty"`
@@ -35,4 +37,3 @@ type Exam struct {
 	CreatedAt time.Time         `json:"created_at"`
 	UpdatedAt time.Time         `json:"updated_at"`
 }
-

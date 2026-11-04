@@ -25,9 +25,10 @@ func TestMigrationsFS_EmbeddedFiles(t *testing.T) {
 		}
 	}
 
-	require.Len(t, files, 2, "Expected exactly 2 migration versions")
+	require.Len(t, files, 3, "Expected exactly 2 migration versions")
 	assert.Equal(t, "000001_init_schema.sql", files[0])
 	assert.Equal(t, "000002_add_analytics_indexes.sql", files[1])
+	assert.Equal(t, "000003_add_time_metrics.sql", files[2])
 
 	// 1. Verify 000001_init_schema.sql content
 	initContent, err := fs.ReadFile(database.MigrationsFS, "migrations/000001_init_schema.sql")
