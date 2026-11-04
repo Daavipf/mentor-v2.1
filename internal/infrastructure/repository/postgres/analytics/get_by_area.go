@@ -12,7 +12,8 @@ func (r *analyticsRepository) GetPerformanceByArea(ctx context.Context, userID s
 			q.area,
 			COUNT(*) AS total_questions,
 			COUNT(*) FILTER (WHERE qoe.got_right = true) AS correct_answers,
-			COALESCE(ROUND((COUNT(*) FILTER (WHERE qoe.got_right = true)::numeric / NULLIF(COUNT(*), 0)) * 100, 2), 0) AS accuracy_rate
+			COALESCE(ROUND((COUNT(*) FILTER (WHERE qoe.got_right = true)::numeric / NULLIF(COUNT(*), 0)) * 100, 2), 0) AS accuracy_rate,
+			COALESCE(EXTRACT(EPOCH FROM AVG(qoe.finished_at - qoe.started_at)), 0) AS avg_response_time_seconds
 		FROM questions_on_exams qoe
 		JOIN exams e ON e.id = qoe.exam_id
 		JOIN questions q ON q.id = qoe.question_id
@@ -35,6 +36,7 @@ func (r *analyticsRepository) GetPerformanceByArea(ctx context.Context, userID s
 			&ap.TotalQuestions,
 			&ap.CorrectAnswers,
 			&ap.AccuracyRate,
+			&ap.AverageQuestionTime,
 		); err != nil {
 			return nil, err
 		}

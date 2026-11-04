@@ -16,10 +16,11 @@ type OverviewMetrics struct {
 
 // AreaPerformance represents accuracy and question volume per knowledge area.
 type AreaPerformance struct {
-	Area           string  `json:"area"`
-	TotalQuestions int     `json:"total_questions"`
-	CorrectAnswers int     `json:"correct_answers"`
-	AccuracyRate   float64 `json:"accuracy_rate"`
+	Area                string  `json:"area"`
+	TotalQuestions      int     `json:"total_questions"`
+	CorrectAnswers      int     `json:"correct_answers"`
+	AccuracyRate        float64 `json:"accuracy_rate"`
+	AverageQuestionTime float64 `json:"average_question_time"`
 }
 
 // DisciplinePerformance represents performance grouped by discipline.

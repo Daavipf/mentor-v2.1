@@ -25,6 +25,7 @@ func (u *examUseCase) SubmitExam(ctx context.Context, examID, userID string, ans
 		return nil, domain.ErrExamAlreadyFinished
 	}
 
+	correctCount := 0
 	for _, answer := range answers {
 		qOnExam, err := u.examRepo.GetQuestionOnExam(ctx, examID, answer.QuestionID)
 		if err != nil || qOnExam == nil {
@@ -37,15 +38,12 @@ func (u *examUseCase) SubmitExam(ctx context.Context, examID, userID string, ans
 		}
 
 		u.examRepo.AnswerQuestion(ctx, examID, answer.QuestionID, answer.SelectedAlternativeID, *answer.StartedAt, *answer.FinishedAt, isCorrect)
-	}
-
-	totalQuestions := len(exam.Questions)
-	correctCount := 0
-	for _, qe := range exam.Questions {
-		if qe.GotRight != nil && *qe.GotRight {
+		if isCorrect {
 			correctCount++
 		}
 	}
+
+	totalQuestions := len(exam.Questions)
 
 	score := 0
 	if totalQuestions > 0 {

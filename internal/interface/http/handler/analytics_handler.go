@@ -36,6 +36,22 @@ func (h *AnalyticsHandler) Overview(w http.ResponseWriter, r *http.Request) {
 	SendSuccess(w, http.StatusOK, res)
 }
 
+func (h *AnalyticsHandler) ByArea(w http.ResponseWriter, r *http.Request) {
+	userID, ok := middleware.GetUserID(r.Context())
+	if !ok || userID == "" {
+		SendError(w, domain.ErrUnauthorized)
+		return
+	}
+
+	res, err := h.analyticsUseCase.GetPerformanceByArea(r.Context(), userID)
+	if err != nil {
+		SendError(w, err)
+		return
+	}
+
+	SendSuccess(w, http.StatusOK, res)
+}
+
 func (h *AnalyticsHandler) ByDiscipline(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok || userID == "" {
@@ -43,6 +59,33 @@ func (h *AnalyticsHandler) ByDiscipline(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	filter := h.getQueryFilters(r)
+	/*filter := analytics.AreaDisciplineFilterInput{
+		Area: r.URL.Query().Get("area"),
+	}
+
+	if startDateStr := r.URL.Query().Get("start_date"); startDateStr != "" {
+		if t, err := parseDate(startDateStr); err == nil {
+			filter.StartDate = &t
+		}
+	}
+
+	if endDateStr := r.URL.Query().Get("end_date"); endDateStr != "" {
+		if t, err := parseDate(endDateStr); err == nil {
+			filter.EndDate = &t
+		}
+	}*/
+
+	res, err := h.analyticsUseCase.GetByDiscipline(r.Context(), userID, filter)
+	if err != nil {
+		SendError(w, err)
+		return
+	}
+
+	SendSuccess(w, http.StatusOK, res)
+}
+
+func (h *AnalyticsHandler) getQueryFilters(r *http.Request) analytics.ByDisciplineFilterInput {
 	filter := analytics.ByDisciplineFilterInput{
 		Area: r.URL.Query().Get("area"),
 	}
@@ -59,13 +102,7 @@ func (h *AnalyticsHandler) ByDiscipline(w http.ResponseWriter, r *http.Request) 
 		}
 	}
 
-	res, err := h.analyticsUseCase.GetByDiscipline(r.Context(), userID, filter)
-	if err != nil {
-		SendError(w, err)
-		return
-	}
-
-	SendSuccess(w, http.StatusOK, res)
+	return filter
 }
 
 func (h *AnalyticsHandler) TopicsRanking(w http.ResponseWriter, r *http.Request) {
@@ -141,4 +178,3 @@ func parseDate(val string) (time.Time, error) {
 	}
 	return time.Parse("2006-01-02", val)
 }
-
