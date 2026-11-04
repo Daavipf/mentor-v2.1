@@ -30,11 +30,12 @@ func (u *analyticsUseCase) GetByDiscipline(
 	list := make([]DisciplinePerformanceDTO, 0, len(disciplines))
 	for _, d := range disciplines {
 		list = append(list, DisciplinePerformanceDTO{
-			Discipline:     d.Discipline,
-			Area:           d.Area,
-			TotalQuestions: d.TotalQuestions,
-			CorrectAnswers: d.CorrectAnswers,
-			AccuracyRate:   d.AccuracyRate,
+			Discipline:          d.Discipline,
+			Area:                d.Area,
+			TotalQuestions:      d.TotalQuestions,
+			CorrectAnswers:      d.CorrectAnswers,
+			AccuracyRate:        d.AccuracyRate,
+			AverageQuestionTime: d.AverageQuestionTime,
 		})
 	}
 

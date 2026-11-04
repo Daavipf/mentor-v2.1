@@ -46,11 +46,12 @@ type ByDisciplineFilterInput struct {
 
 // DisciplinePerformanceDTO represents performance in a single discipline.
 type DisciplinePerformanceDTO struct {
-	Discipline     string  `json:"discipline"`
-	Area           string  `json:"area"`
-	TotalQuestions int     `json:"total_questions"`
-	CorrectAnswers int     `json:"correct_answers"`
-	AccuracyRate   float64 `json:"accuracy_rate"`
+	Discipline          string  `json:"discipline"`
+	Area                string  `json:"area"`
+	TotalQuestions      int     `json:"total_questions"`
+	CorrectAnswers      int     `json:"correct_answers"`
+	AccuracyRate        float64 `json:"accuracy_rate"`
+	AverageQuestionTime float64 `json:"average_question_time"`
 }
 
 // ByDisciplineResponse wraps discipline performance results.

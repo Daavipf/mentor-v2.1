@@ -25,11 +25,12 @@ type AreaPerformance struct {
 
 // DisciplinePerformance represents performance grouped by discipline.
 type DisciplinePerformance struct {
-	Discipline     string  `json:"discipline"`
-	Area           string  `json:"area"`
-	TotalQuestions int     `json:"total_questions"`
-	CorrectAnswers int     `json:"correct_answers"`
-	AccuracyRate   float64 `json:"accuracy_rate"`
+	Discipline          string  `json:"discipline"`
+	Area                string  `json:"area"`
+	TotalQuestions      int     `json:"total_questions"`
+	CorrectAnswers      int     `json:"correct_answers"`
+	AccuracyRate        float64 `json:"accuracy_rate"`
+	AverageQuestionTime float64 `json:"average_question_time"`
 }
 
 // TopicPerformance represents performance grouped by specific question topics.
