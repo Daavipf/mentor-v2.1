@@ -27,7 +27,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
-	if err := questionService.SeedDefaultQuestions(ctx); err != nil {
+	if err := questionService.SeedDefaultQuestions(ctx, cfg); err != nil {
 		log.Fatalf("Failed to seed questions: %v", err)
 	}
 

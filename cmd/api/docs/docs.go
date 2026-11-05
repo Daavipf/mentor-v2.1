@@ -1693,7 +1693,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Mentor API",
-	Description:      "API for the Mentor application, providing endpoints for user authentication, exam management, and analytics.",
+	Description:      "API para a aplicação Mentor, simulador de provas e simulados padrão Enem. Rotas de autenticação, gerenciamento de simulados, histórico de simulados e análise de desempenho do usuário.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

@@ -79,7 +79,7 @@ func main() {
 		existing, _ := questionRepo.ListRandom(ctx, 1)
 		if len(existing) == 0 {
 			log.Println("Questions database is empty. Seeding default questions internally...")
-			if err := questionService.SeedDefaultQuestions(ctx); err != nil {
+			if err := questionService.SeedDefaultQuestions(ctx, cfg); err != nil {
 				log.Printf("Warning: Failed to seed default questions: %v", err)
 			} else {
 				log.Println("Default questions seeded successfully.")

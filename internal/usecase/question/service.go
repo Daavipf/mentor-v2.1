@@ -4,10 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/google/uuid"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/domain/entity"
 	"mentor-api/internal/domain/repository"
+	"mentor-api/internal/infrastructure/config"
+
+	"github.com/google/uuid"
 )
 
 // Service defines internal methods for manipulating questions and alternatives.
@@ -17,7 +19,7 @@ type Service interface {
 	GetQuestionByID(ctx context.Context, id string) (*entity.Question, error)
 	SelectQuestionsForExam(ctx context.Context, areas []string, count int) ([]entity.Question, error)
 	ValidateAnswer(ctx context.Context, questionID string, alternativeID string) (bool, error)
-	SeedDefaultQuestions(ctx context.Context) error
+	SeedDefaultQuestions(ctx context.Context, cfg *config.Config) error
 }
 
 type questionService struct {
@@ -120,7 +122,7 @@ func (s *questionService) ValidateAnswer(ctx context.Context, questionID string,
 	return alt.IsCorrect, nil
 }
 
-func (s *questionService) SeedDefaultQuestions(ctx context.Context) error {
+/*func (s *questionService) SeedDefaultQuestions(ctx context.Context) error {
 	sampleQuestions := []CreateQuestionInput{
 		{
 			Title:                    ptr("Revolução Francesa"),
@@ -184,4 +186,4 @@ func (s *questionService) SeedDefaultQuestions(ctx context.Context) error {
 func ptr(s string) *string {
 	return &s
 }
-
+*/

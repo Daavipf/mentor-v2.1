@@ -12,7 +12,6 @@ import (
 	"mentor-api/internal/usecase/auth"
 	"mentor-api/internal/usecase/exam"
 	"mentor-api/internal/usecase/history"
-	"mentor-api/internal/usecase/question"
 	"mentor-api/tests/mocks"
 )
 
@@ -37,8 +36,8 @@ func SetupTestApp() *TestApp {
 	historyRepo := mocks.NewMockHistoryRepository().(*mocks.MockHistoryRepository)
 	analyticsRepo := mocks.NewMockAnalyticsRepository(examRepo, historyRepo, questionRepo)
 
-	questionService := question.NewQuestionService(questionRepo)
-	_ = questionService.SeedDefaultQuestions(context.Background())
+	questionService := mocks.NewQuestionServiceMock(questionRepo)
+	_ = questionService.SeedDefaultQuestions(context.Background(), nil)
 
 	authUC := auth.NewAuthUseCase(userRepo, hasher, tokenMgr, 24*time.Hour)
 	examUC := exam.NewExamUseCase(examRepo, historyRepo, questionService)

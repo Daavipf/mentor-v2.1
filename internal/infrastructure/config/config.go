@@ -9,11 +9,13 @@ import (
 )
 
 type Config struct {
-	Port         string
-	DatabaseURL  string
-	JWTSecret    string
-	JWTExpiresIn time.Duration
-	BcryptCost   int
+	Port              string
+	DatabaseURL       string
+	EnemApiURL        string
+	ImagePathTemplate string
+	JWTSecret         string
+	JWTExpiresIn      time.Duration
+	BcryptCost        int
 }
 
 func Load() *Config {
@@ -24,6 +26,8 @@ func Load() *Config {
 	jwtSecret := getEnv("JWT_SECRET", "super-secret-jwt-key-mentor-v2")
 	jwtExpiresStr := getEnv("JWT_EXPIRES_IN_HOURS", "24")
 	bcryptCostStr := getEnv("BCRYPT_COST", "10")
+	enemApiURL := getEnv("ENEM_API_URL", "https://api.enem.com.br")
+	imagePathTemplate := getEnv("IMAGE_PATH_TEMPLATE", "/images/{filename}")
 
 	jwtExpiresHours, err := strconv.Atoi(jwtExpiresStr)
 	if err != nil || jwtExpiresHours <= 0 {
@@ -36,11 +40,13 @@ func Load() *Config {
 	}
 
 	return &Config{
-		Port:         port,
-		DatabaseURL:  dbURL,
-		JWTSecret:    jwtSecret,
-		JWTExpiresIn: time.Duration(jwtExpiresHours) * time.Hour,
-		BcryptCost:   bcryptCost,
+		Port:              port,
+		DatabaseURL:       dbURL,
+		EnemApiURL:        enemApiURL,
+		ImagePathTemplate: imagePathTemplate,
+		JWTSecret:         jwtSecret,
+		JWTExpiresIn:      time.Duration(jwtExpiresHours) * time.Hour,
+		BcryptCost:        bcryptCost,
 	}
 }
 
@@ -50,4 +56,3 @@ func getEnv(key, fallback string) string {
 	}
 	return fallback
 }
-

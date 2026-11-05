@@ -4,11 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/usecase/question"
 	"mentor-api/tests/mocks"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func strPtr(s string) *string {
@@ -17,7 +18,7 @@ func strPtr(s string) *string {
 
 func TestInternalQuestionService_CreateAndRetrieve(t *testing.T) {
 	qRepo := mocks.NewMockQuestionRepository()
-	service := question.NewQuestionService(qRepo)
+	service := mocks.NewQuestionServiceMock(qRepo)
 	ctx := context.Background()
 
 	input := question.CreateQuestionInput{
@@ -69,14 +70,13 @@ func TestInternalQuestionService_CreateAndRetrieve(t *testing.T) {
 
 func TestInternalQuestionService_SeedDefaultQuestions(t *testing.T) {
 	qRepo := mocks.NewMockQuestionRepository()
-	service := question.NewQuestionService(qRepo)
+	service := mocks.NewQuestionServiceMock(qRepo)
 	ctx := context.Background()
 
-	err := service.SeedDefaultQuestions(ctx)
+	err := service.SeedDefaultQuestions(ctx, nil)
 	require.NoError(t, err)
 
 	questions, err := service.SelectQuestionsForExam(ctx, nil, 10)
 	require.NoError(t, err)
 	assert.Len(t, questions, 3)
 }
-

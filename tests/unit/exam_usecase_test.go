@@ -18,10 +18,10 @@ func setupExamUseCase() (exam.UseCase, question.Service) {
 	qRepo := mocks.NewMockQuestionRepository()
 	eRepo := mocks.NewMockExamRepository(qRepo)
 	hRepo := mocks.NewMockHistoryRepository()
-	qService := question.NewQuestionService(qRepo)
+	qService := mocks.NewQuestionServiceMock(qRepo)
 
 	// Seed questions
-	_ = qService.SeedDefaultQuestions(context.Background())
+	_ = qService.SeedDefaultQuestions(context.Background(), nil)
 
 	examUC := exam.NewExamUseCase(eRepo, hRepo, qService)
 	return examUC, qService
