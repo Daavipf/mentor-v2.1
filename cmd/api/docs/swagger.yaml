@@ -1,0 +1,9 @@
+basePath: /api/v1
+info:
+  contact: {}
+  description: API for the Mentor application, providing endpoints for user authentication,
+    exam management, and analytics.
+  title: Mentor API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

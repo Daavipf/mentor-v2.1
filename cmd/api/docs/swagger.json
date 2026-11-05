@@ -1,0 +1,11 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API for the Mentor application, providing endpoints for user authentication, exam management, and analytics.",
+        "title": "Mentor API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {}
+}

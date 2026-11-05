@@ -66,4 +66,3 @@ func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 
 	SendSuccess(w, http.StatusOK, res)
 }
-

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	_ "mentor-api/cmd/api/docs"
 	"mentor-api/internal/infrastructure/config"
 	"mentor-api/internal/infrastructure/database"
 	pgAnalytics "mentor-api/internal/infrastructure/repository/postgres/analytics"
@@ -27,6 +28,10 @@ import (
 	"mentor-api/internal/usecase/question"
 )
 
+// @title Mentor API
+// @version 1.0
+// @description API for the Mentor application, providing endpoints for user authentication, exam management, and analytics.
+// @basePath /api/v1
 func main() {
 	cfg := config.Load()
 	log.Println("Starting Mentor API...")

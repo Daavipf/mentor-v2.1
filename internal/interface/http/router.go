@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 
 	"mentor-api/internal/infrastructure/security"
 	"mentor-api/internal/interface/http/handler"
@@ -38,6 +39,10 @@ func NewRouter(cfg RouterConfig) http.Handler {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
+
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("/swagger/doc.json"),
+	))
 
 	// Health check
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

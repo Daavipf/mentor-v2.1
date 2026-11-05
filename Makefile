@@ -5,8 +5,11 @@ build:
 	go build -o bin/seeder ./cmd/seeder
 	go build -o bin/migrate ./cmd/migrate
 
-run:
-	go run ./cmd/api
+swagger:
+	swag init -g cmd/api/main.go -o cmd/api/docs
+
+run: swagger
+	go run cmd/api/main.go
 
 test:
 	go test -v ./tests/...
