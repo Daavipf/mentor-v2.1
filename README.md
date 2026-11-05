@@ -87,7 +87,39 @@ Conforme os requisitos da especificação:
 
 ---
 
-## 🧪 4. Testes Automatizados e de Integração Separados
+## 📖 4. Documentação Interativa da API (Swagger / OpenAPI)
+
+A API possui documentação totalmente interativa gerada via [Swaggo](https://github.com/swaggo/swag) a partir de anotações declarativas nos handlers e structs do projeto.
+
+### Acessando a Interface Gráfica (Swagger UI)
+Com a API rodando, acesse no navegador:
+```text
+http://localhost:8080/swagger/index.html
+```
+
+### Como Executar Requisições Protegidas na Swagger UI:
+1. Faça a requisição no endpoint public POST /api/v1/auth/login (ou /register).
+2. Copie o valor do access_token retornado no corpo da resposta.
+3. No topo da página do Swagger, clique no botão Authorize (ícone de cadeado).
+4. No campo Value, insira a palavra Bearer seguida de um espaço e o seu token:
+
+```text
+Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+```
+5. Clique em Authorize e feche a janela. Todos os endpoints protegidos agora enviarão o token automaticamente.
+
+### Regenerando a Documentação
+Sempre que alterar os comentários dos handlers ou parâmetros das rotas, atualize a documentação executando:
+
+```bash
+make swagger
+# Ou diretamente via CLI:
+swag init -g cmd/api/main.go -o cmd/api/docs
+```
+
+---
+
+## 🧪 5. Testes Automatizados e de Integração Separados
 
 Para garantir visualização limpa e manutenção independente, os testes foram alocados em `tests/`, completamente apartados de `cmd/` e `internal/`:
 
@@ -111,7 +143,7 @@ make test-integration
 
 ---
 
-## 🗄️ 5. Controle de Versão do Esquema de Banco de Dados (Migrations)
+## 🗄️ 6. Controle de Versão do Esquema de Banco de Dados (Migrations)
 
 O projeto possui um sistema próprio de **controle de versão incremental do esquema** implementado em `internal/infrastructure/database/migrator.go`, garantindo que alterações estruturais sejam aplicadas em ordem determinística e apenas uma vez:
 
@@ -125,7 +157,7 @@ O projeto possui um sistema próprio de **controle de versão incremental do esq
 
 ---
 
-## 🚀 6. Como Executar o Projeto
+## 🚀 7. Como Executar o Projeto
 
 ### Pré-requisitos
 - [Go 1.22+](https://go.dev/) instalado (ou Docker)
@@ -156,7 +188,7 @@ make seed
 
 ---
 
-## 📡 7. Endpoints da API
+## 📡 8. Endpoints da API
 
 ### Autenticação (Pública)
 
