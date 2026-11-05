@@ -3,10 +3,11 @@ package handler
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
 	"mentor-api/internal/domain"
 	"mentor-api/internal/interface/http/middleware"
 	"mentor-api/internal/usecase/history"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type HistoryHandler struct {
@@ -19,6 +20,16 @@ func NewHistoryHandler(historyUseCase history.UseCase) *HistoryHandler {
 	}
 }
 
+// List godoc
+// @Summary      Lista os históricos de simulados do usuário
+// @Description  Retorna a lista simplificada de todos os históricos de simulados finalizados pelo usuário autenticado
+// @Tags         Histories
+// @Produce      json
+// @Success      200  {array}   history.HistoryExamSummary  "Históricos retornados com sucesso"
+// @Failure      401  {object}  map[string]string             "Não autorizado / Token JWT ausente ou inválido"
+// @Failure      500  {object}  map[string]string             "Erro interno do servidor"
+// @Security     BearerAuth
+// @Router       /histories [get]
 func (h *HistoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok || userID == "" {
@@ -35,6 +46,19 @@ func (h *HistoryHandler) List(w http.ResponseWriter, r *http.Request) {
 	SendSuccess(w, http.StatusOK, res)
 }
 
+// GetByID godoc
+// @Summary      Busca um histórico por ID
+// @Description  Retorna os detalhes completos de um histórico de simulado específico pertencente ao usuário autenticado
+// @Tags         Histories
+// @Produce      json
+// @Param        id   path      string                  true  "ID do Histórico (UUID)"
+// @Success      200  {object}  history.HistoryResponse   "Histórico encontrado com sucesso"
+// @Failure      400  {object}  map[string]string       "ID do histórico inválido ou ausente"
+// @Failure      401  {object}  map[string]string       "Não autorizado / Token JWT ausente ou inválido"
+// @Failure      404  {object}  map[string]string       "Histórico não encontrado"
+// @Failure      500  {object}  map[string]string       "Erro interno do servidor"
+// @Security     BearerAuth
+// @Router       /histories/{id} [get]
 func (h *HistoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok || userID == "" {
@@ -56,4 +80,3 @@ func (h *HistoryHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 
 	SendSuccess(w, http.StatusOK, res)
 }
-

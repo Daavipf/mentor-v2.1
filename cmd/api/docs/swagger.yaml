@@ -1,9 +1,1101 @@
 basePath: /api/v1
+definitions:
+  analytics.AreaPerformanceDTO:
+    properties:
+      accuracy_rate:
+        type: number
+      area:
+        type: string
+      average_question_time:
+        type: number
+      correct_answers:
+        type: integer
+      total_questions:
+        type: integer
+    type: object
+  analytics.ByAreaResponse:
+    properties:
+      areas:
+        items:
+          $ref: '#/definitions/analytics.AreaPerformanceDTO'
+        type: array
+    type: object
+  analytics.ByDisciplineResponse:
+    properties:
+      disciplines:
+        items:
+          $ref: '#/definitions/analytics.DisciplinePerformanceDTO'
+        type: array
+      total_disciplines:
+        type: integer
+    type: object
+  analytics.DailyStudyRhythmDTO:
+    properties:
+      correct_answers:
+        type: integer
+      date:
+        type: string
+      total_questions:
+        type: integer
+    type: object
+  analytics.DisciplinePerformanceDTO:
+    properties:
+      accuracy_rate:
+        type: number
+      area:
+        type: string
+      average_question_time:
+        type: number
+      correct_answers:
+        type: integer
+      discipline:
+        type: string
+      total_questions:
+        type: integer
+    type: object
+  analytics.EvolutionResponse:
+    properties:
+      period_type:
+        type: string
+      points:
+        items:
+          $ref: '#/definitions/analytics.TimePeriodMetricDTO'
+        type: array
+      study_rhythm:
+        items:
+          $ref: '#/definitions/analytics.DailyStudyRhythmDTO'
+        type: array
+    type: object
+  analytics.ExamPerformanceHistoryDTO:
+    properties:
+      correct_answers:
+        type: integer
+      date:
+        type: string
+      exam_id:
+        type: string
+      exam_title:
+        type: string
+      finished_at:
+        type: string
+      score:
+        type: integer
+      total_questions:
+        type: integer
+    type: object
+  analytics.ExamsHistoryResponse:
+    properties:
+      exams:
+        items:
+          $ref: '#/definitions/analytics.ExamPerformanceHistoryDTO'
+        type: array
+      overall_average_score:
+        type: number
+      recent_average_score:
+        type: number
+      score_evolution_percentage:
+        type: number
+      total_finished_exams:
+        type: integer
+    type: object
+  analytics.OverviewResponse:
+    properties:
+      average_exam_score:
+        type: number
+      average_question_time:
+        type: number
+      overall_accuracy_rate:
+        type: number
+      performance_by_area:
+        items:
+          $ref: '#/definitions/analytics.AreaPerformanceDTO'
+        type: array
+      recent_study_rhythm:
+        items:
+          $ref: '#/definitions/analytics.DailyStudyRhythmDTO'
+        type: array
+      total_completed_exams:
+        type: integer
+      total_correct_answers:
+        type: integer
+      total_questions_answered:
+        type: integer
+    type: object
+  analytics.TimePeriodMetricDTO:
+    properties:
+      accuracy_rate:
+        type: number
+      correct_answers:
+        type: integer
+      period:
+        type: string
+      period_date:
+        type: string
+      total_questions:
+        type: integer
+    type: object
+  analytics.TopicPerformanceDTO:
+    properties:
+      accuracy_rate:
+        type: number
+      correct_answers:
+        type: integer
+      topic:
+        type: string
+      total_questions:
+        type: integer
+    type: object
+  analytics.TopicsRankingResponse:
+    properties:
+      min_questions_threshold:
+        type: integer
+      strong_topics:
+        items:
+          $ref: '#/definitions/analytics.TopicPerformanceDTO'
+        type: array
+      weak_topics:
+        items:
+          $ref: '#/definitions/analytics.TopicPerformanceDTO'
+        type: array
+    type: object
+  auth.AuthResponse:
+    properties:
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/auth.UserResponse'
+    type: object
+  auth.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.RegisterInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.UserResponse:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  exam.AnswerQuestionInput:
+    properties:
+      finished_at:
+        type: string
+      question_id:
+        type: string
+      selected_alternative_id:
+        type: string
+      started_at:
+        type: string
+    type: object
+  exam.CreateExamInput:
+    properties:
+      areas:
+        items:
+          type: string
+        type: array
+      date:
+        type: string
+      question_count:
+        type: integer
+      title:
+        type: string
+    type: object
+  exam.ExamAlternativeDTO:
+    properties:
+      id:
+        type: string
+      image_path:
+        type: string
+      is_correct:
+        description: Only revealed when exam is finished
+        type: boolean
+      text:
+        type: string
+    type: object
+  exam.ExamQuestionDTO:
+    properties:
+      alternatives:
+        items:
+          $ref: '#/definitions/exam.ExamAlternativeDTO'
+        type: array
+      alternatives_introduction:
+        type: string
+      area:
+        type: string
+      context:
+        type: string
+      discipline:
+        type: string
+      got_right:
+        description: Only revealed when exam is finished
+        type: boolean
+      images:
+        items:
+          type: string
+        type: array
+      index:
+        type: integer
+      language:
+        type: string
+      question_id:
+        type: string
+      selected_alternative_id:
+        type: string
+      title:
+        type: string
+      topics:
+        items:
+          type: string
+        type: array
+      year:
+        type: integer
+    type: object
+  exam.ExamResponse:
+    properties:
+      areas:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      date:
+        type: string
+      id:
+        type: string
+      is_finished:
+        type: boolean
+      questions:
+        items:
+          $ref: '#/definitions/exam.ExamQuestionDTO'
+        type: array
+      score:
+        type: integer
+      title:
+        type: string
+      total_questions:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  exam.ExamSummaryResponse:
+    properties:
+      areas:
+        items:
+          type: string
+        type: array
+      created_at:
+        type: string
+      date:
+        type: string
+      id:
+        type: string
+      is_finished:
+        type: boolean
+      score:
+        type: integer
+      title:
+        type: string
+      total_questions:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  exam.FinishExamResponse:
+    properties:
+      correct_answers:
+        type: integer
+      exam_id:
+        type: string
+      finished_at:
+        type: string
+      score:
+        type: integer
+      total_questions:
+        type: integer
+    type: object
+  history.HistoryExamSummary:
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+    type: object
+  history.HistoryResponse:
+    properties:
+      created_at:
+        type: string
+      exam:
+        $ref: '#/definitions/history.HistoryExamSummary'
+      exam_id:
+        type: string
+      finished_at:
+        type: string
+      id:
+        type: string
+      score:
+        type: integer
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
 info:
   contact: {}
   description: API for the Mentor application, providing endpoints for user authentication,
     exam management, and analytics.
   title: Mentor API
   version: "1.0"
-paths: {}
+paths:
+  /analytics/by-area:
+    get:
+      description: 'Retorna o desempenho consolidado agrupado por área do conhecimento
+        (ex: Ciências da Natureza, Humanas, etc.)'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Desempenho por área retornado com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/analytics.ByAreaResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Desempenho por grande área do conhecimento
+      tags:
+      - Analytics
+  /analytics/by-discipline:
+    get:
+      description: Retorna as métricas detalhadas filtradas por disciplina, com opções
+        de filtro por área e intervalo de datas
+      parameters:
+      - description: Filtra por área do conhecimento
+        in: query
+        name: area
+        type: string
+      - description: 'Data inicial (Formatos: YYYY-MM-DD ou RFC3339)'
+        example: '"2026-01-01"'
+        in: query
+        name: start_date
+        type: string
+      - description: 'Data final (Formatos: YYYY-MM-DD ou RFC3339)'
+        example: '"2026-12-31"'
+        in: query
+        name: end_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Desempenho por disciplina retornado com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/analytics.ByDisciplineResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Desempenho por disciplina
+      tags:
+      - Analytics
+  /analytics/evolution:
+    get:
+      description: 'Retorna o histórico de evolução de desempenho por períodos (ex:
+        semanal/mensal) retroagindo um número determinado de meses'
+      parameters:
+      - default: weekly
+        description: Periodicidade do agrupamento (weekly, monthly)
+        enum:
+        - weekly
+        - monthly
+        in: query
+        name: period
+        type: string
+      - default: 6
+        description: 'Quantidade de meses retroativos a analisar (Padrão: 6)'
+        in: query
+        name: months
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dados de evolução retornados com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/analytics.EvolutionResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Evolução temporal do usuário
+      tags:
+      - Analytics
+  /analytics/exams-history:
+    get:
+      description: Retorna o histórico detalhado de simulados realizados para fins
+        de gráficos e métricas temporais
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Histórico analítico retornado com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/analytics.ExamsHistoryResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Histórico analítico de simulados
+      tags:
+      - Analytics
+  /analytics/overview:
+    get:
+      description: Retorna o resumo geral de métricas e taxa de acertos do usuário
+        autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Visão geral retornada com sucesso
+          schema:
+            $ref: '#/definitions/analytics.OverviewResponse'
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Visão geral do desempenho
+      tags:
+      - Analytics
+  /analytics/topics-ranking:
+    get:
+      description: Retorna a classificação de assuntos com base na taxa de desempenho,
+        exigindo um número mínimo de questões respondidas
+      parameters:
+      - default: 10
+        description: 'Quantidade mínima de questões para incluir o tópico (Padrão:
+          10)'
+        in: query
+        name: min_questions
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Ranking de tópicos retornado com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/analytics.TopicsRankingResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Ranking de tópicos com mais erros/acertos
+      tags:
+      - Analytics
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Realiza login com e-mail e senha, retornando o token JWT de acesso
+      parameters:
+      - description: Credenciais de acesso
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Autenticado com sucesso
+          schema:
+            $ref: '#/definitions/auth.AuthResponse'
+        "400":
+          description: Entrada inválida (ErrInvalidInput)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Credenciais incorretas (ErrUnauthorized)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Autenticação de usuário
+      tags:
+      - Auth
+  /auth/me:
+    get:
+      description: Retorna as informações do perfil associado ao token JWT informado
+        no header Authorization
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Dados do perfil do usuário
+          schema:
+            $ref: '#/definitions/auth.UserResponse'
+        "401":
+          description: Não autorizado / Token inválido ou ausente
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Usuário não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Obtém perfil do usuário logado
+      tags:
+      - Auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: Cria uma nova conta na plataforma a partir dos dados informados
+      parameters:
+      - description: Dados para cadastro do usuário
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Usuário criado com sucesso
+          schema:
+            $ref: '#/definitions/auth.AuthResponse'
+        "400":
+          description: Entrada inválida (ErrInvalidInput)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "409":
+          description: Conflito / E-mail já cadastrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cadastro de novo usuário
+      tags:
+      - Auth
+  /exams:
+    get:
+      description: Retorna o histórico e a lista de simulados pertencentes ao usuário
+        autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Lista de simulados retornada com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/exam.ExamSummaryResponse'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Lista os simulados do usuário
+      tags:
+      - Exams
+    post:
+      consumes:
+      - application/json
+      description: Gera um novo simulado para o usuário autenticado com base nas configurações
+        enviadas
+      parameters:
+      - description: Parâmetros de configuração do simulado
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/exam.CreateExamInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Simulado criado com sucesso
+          schema:
+            $ref: '#/definitions/exam.ExamResponse'
+        "400":
+          description: Entrada inválida (ErrInvalidInput)
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Cria um novo simulado
+      tags:
+      - Exams
+  /exams/{id}:
+    delete:
+      description: Exclui um simulado específico pertencente ao usuário autenticado
+      parameters:
+      - description: ID do Simulado (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Simulado excluído com sucesso
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: ID do simulado inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Simulado não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Remove um simulado
+      tags:
+      - Exams
+    get:
+      description: Retorna os detalhes completos de um simulado específico pertencente
+        ao usuário autenticado
+      parameters:
+      - description: ID do Simulado (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Simulado encontrado com sucesso
+          schema:
+            $ref: '#/definitions/exam.ExamResponse'
+        "400":
+          description: ID inválido ou ausente
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Simulado não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Busca um simulado por ID
+      tags:
+      - Exams
+  /exams/{id}/answers:
+    post:
+      consumes:
+      - application/json
+      description: Registra a resposta individual de uma questão no simulado em andamento
+      parameters:
+      - description: ID do Simulado (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Dados da resposta da questão
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/exam.AnswerQuestionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Resposta registrada com sucesso
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Dados de resposta inválidos
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Simulado ou questão não encontrada
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Responde uma questão pontual do simulado
+      tags:
+      - Exams
+  /exams/{id}/finish:
+    post:
+      description: Encerra o tempo do simulado e calcula a pontuação/resultado final
+      parameters:
+      - description: ID do Simulado (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Simulado finalizado com sucesso
+          schema:
+            $ref: '#/definitions/exam.FinishExamResponse'
+        "400":
+          description: ID do simulado inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Simulado não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Finaliza um simulado
+      tags:
+      - Exams
+  /exams/{id}/submit:
+    post:
+      consumes:
+      - application/json
+      description: Envia o lote completo de respostas de um simulado de uma só vez
+        para avaliação
+      parameters:
+      - description: ID do Simulado (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Lista de respostas das questões
+        in: body
+        name: answers
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/exam.AnswerQuestionInput'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Simulado submetido e avaliado com sucesso
+          schema:
+            $ref: '#/definitions/exam.FinishExamResponse'
+        "400":
+          description: Entrada ou ID do simulado inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Simulado não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Submete todas as respostas de um simulado
+      tags:
+      - Exams
+  /histories:
+    get:
+      description: Retorna a lista simplificada de todos os históricos de simulados
+        finalizados pelo usuário autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Históricos retornados com sucesso
+          schema:
+            items:
+              $ref: '#/definitions/history.HistoryExamSummary'
+            type: array
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Lista os históricos de simulados do usuário
+      tags:
+      - Histories
+  /histories/{id}:
+    get:
+      description: Retorna os detalhes completos de um histórico de simulado específico
+        pertencente ao usuário autenticado
+      parameters:
+      - description: ID do Histórico (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Histórico encontrado com sucesso
+          schema:
+            $ref: '#/definitions/history.HistoryResponse'
+        "400":
+          description: ID do histórico inválido ou ausente
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Não autorizado / Token JWT ausente ou inválido
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Histórico não encontrado
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Erro interno do servidor
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Busca um histórico por ID
+      tags:
+      - Histories
+securityDefinitions:
+  BearerAuth:
+    description: Digite "Bearer " seguido do token JWT
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

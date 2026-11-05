@@ -32,6 +32,10 @@ import (
 // @version 1.0
 // @description API for the Mentor application, providing endpoints for user authentication, exam management, and analytics.
 // @basePath /api/v1
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Digite "Bearer " seguido do token JWT
 func main() {
 	cfg := config.Load()
 	log.Println("Starting Mentor API...")

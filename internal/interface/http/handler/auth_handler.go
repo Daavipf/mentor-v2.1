@@ -19,6 +19,18 @@ func NewAuthHandler(authUseCase auth.UseCase) *AuthHandler {
 	}
 }
 
+// Register godoc
+// @Summary      Cadastro de novo usuário
+// @Description  Cria uma nova conta na plataforma a partir dos dados informados
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      auth.RegisterInput  true  "Dados para cadastro do usuário"
+// @Success      201      {object}  auth.AuthResponse   "Usuário criado com sucesso"
+// @Failure      400      {object}  map[string]string   "Entrada inválida (ErrInvalidInput)"
+// @Failure      409      {object}  map[string]string   "Conflito / E-mail já cadastrado"
+// @Failure      500      {object}  map[string]string   "Erro interno do servidor"
+// @Router       /auth/register [post]
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var input auth.RegisterInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -35,6 +47,18 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	SendSuccess(w, http.StatusCreated, res)
 }
 
+// Login godoc
+// @Summary      Autenticação de usuário
+// @Description  Realiza login com e-mail e senha, retornando o token JWT de acesso
+// @Tags         Auth
+// @Accept       json
+// @Produce      json
+// @Param        request  body      auth.LoginInput    true  "Credenciais de acesso"
+// @Success      200      {object}  auth.AuthResponse   "Autenticado com sucesso"
+// @Failure      400      {object}  map[string]string  "Entrada inválida (ErrInvalidInput)"
+// @Failure      401      {object}  map[string]string  "Credenciais incorretas (ErrUnauthorized)"
+// @Failure      500      {object}  map[string]string  "Erro interno do servidor"
+// @Router       /auth/login [post]
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var input auth.LoginInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -51,6 +75,17 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	SendSuccess(w, http.StatusOK, res)
 }
 
+// Me godoc
+// @Summary      Obtém perfil do usuário logado
+// @Description  Retorna as informações do perfil associado ao token JWT informado no header Authorization
+// @Tags         Auth
+// @Produce      json
+// @Success      200      {object}  auth.UserResponse  "Dados do perfil do usuário"
+// @Failure      401      {object}  map[string]string   "Não autorizado / Token inválido ou ausente"
+// @Failure      404      {object}  map[string]string   "Usuário não encontrado"
+// @Failure      500      {object}  map[string]string   "Erro interno do servidor"
+// @Security     BearerAuth
+// @Router       /auth/me [get]
 func (h *AuthHandler) Me(w http.ResponseWriter, r *http.Request) {
 	userID, ok := middleware.GetUserID(r.Context())
 	if !ok || userID == "" {
