@@ -30,7 +30,7 @@ import (
 
 // @title Mentor API
 // @version 1.0
-// @description API for the Mentor application, providing endpoints for user authentication, exam management, and analytics.
+// @description API para a aplicação Mentor, simulador de provas e simulados padrão Enem. Rotas de autenticação, gerenciamento de simulados, histórico de simulados e análise de desempenho do usuário.
 // @basePath /api/v1
 // @securityDefinitions.apikey BearerAuth
 // @in header
