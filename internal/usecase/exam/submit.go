@@ -37,7 +37,18 @@ func (u *examUseCase) SubmitExam(ctx context.Context, examID, userID string, ans
 			return nil, err
 		}
 
-		u.examRepo.AnswerQuestion(ctx, examID, answer.QuestionID, answer.SelectedAlternativeID, *answer.StartedAt, *answer.FinishedAt, isCorrect)
+		startedAt := time.Now()
+		if answer.StartedAt != nil {
+			startedAt = *answer.StartedAt
+		}
+		finishedAt := time.Now()
+		if answer.FinishedAt != nil {
+			finishedAt = *answer.FinishedAt
+		}
+
+		if err := u.examRepo.AnswerQuestion(ctx, examID, answer.QuestionID, answer.SelectedAlternativeID, startedAt, finishedAt, isCorrect); err != nil {
+			return nil, err
+		}
 		if isCorrect {
 			correctCount++
 		}

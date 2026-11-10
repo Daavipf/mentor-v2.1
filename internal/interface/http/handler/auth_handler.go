@@ -44,6 +44,15 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "mentor_token",
+		Value:    res.Token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   30 * 24 * 3600, // 30 days
+	})
+
 	SendSuccess(w, http.StatusCreated, res)
 }
 
@@ -72,7 +81,38 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	http.SetCookie(w, &http.Cookie{
+		Name:     "mentor_token",
+		Value:    res.Token,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   30 * 24 * 3600, // 30 days
+	})
+
 	SendSuccess(w, http.StatusOK, res)
+}
+
+// Logout godoc
+// @Summary      Logout de usuário
+// @Description  Limpa o cookie de sessão http-only
+// @Tags         Auth
+// @Produce      json
+// @Success      200      {object}  map[string]string   "Logout realizado com sucesso"
+// @Router       /auth/logout [post]
+func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, &http.Cookie{
+		Name:     "mentor_token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		MaxAge:   -1,
+	})
+
+	SendSuccess(w, http.StatusOK, map[string]string{
+		"message": "Logged out successfully",
+	})
 }
 
 // Me godoc

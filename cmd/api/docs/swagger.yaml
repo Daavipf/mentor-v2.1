@@ -623,6 +623,21 @@ paths:
       summary: Autenticação de usuário
       tags:
       - Auth
+  /auth/logout:
+    post:
+      description: Limpa o cookie de sessão http-only
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout realizado com sucesso
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Logout de usuário
+      tags:
+      - Auth
   /auth/me:
     get:
       description: Retorna as informações do perfil associado ao token JWT informado

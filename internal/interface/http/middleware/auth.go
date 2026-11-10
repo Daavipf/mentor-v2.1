@@ -20,19 +20,25 @@ const (
 func Auth(tokenManager security.TokenManager) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			tokenStr := ""
 			authHeader := r.Header.Get("Authorization")
-			if authHeader == "" {
+			if authHeader != "" {
+				parts := strings.SplitN(authHeader, " ", 2)
+				if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") {
+					tokenStr = parts[1]
+				}
+			}
+
+			if tokenStr == "" {
+				if cookie, err := r.Cookie("mentor_token"); err == nil {
+					tokenStr = cookie.Value
+				}
+			}
+
+			if tokenStr == "" {
 				response.SendError(w, domain.ErrUnauthorized)
 				return
 			}
-
-			parts := strings.SplitN(authHeader, " ", 2)
-			if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-				response.SendError(w, domain.ErrUnauthorized)
-				return
-			}
-
-			tokenStr := parts[1]
 			claims, err := tokenManager.ValidateToken(tokenStr)
 			if err != nil {
 				response.SendError(w, domain.ErrUnauthorized)

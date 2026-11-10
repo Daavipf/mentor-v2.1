@@ -30,12 +30,13 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	r.Use(chiMiddleware.Recoverer)
 	r.Use(middleware.Logger)
 
-	// CORS configuration
+	// CORS configuration supporting http-only cookies & credentials
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"*"},
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:3000", "http://127.0.0.1:5173", "http://127.0.0.1:3000", "http://localhost:8080"},
+		AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
 		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
-		ExposedHeaders:   []string{"Link"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token", "Cookie"},
+		ExposedHeaders:   []string{"Link", "Set-Cookie"},
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
@@ -57,6 +58,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/register", cfg.AuthHandler.Register)
 			r.Post("/login", cfg.AuthHandler.Login)
+			r.Post("/logout", cfg.AuthHandler.Logout)
 		})
 
 		// Protected routes requiring valid JWT
